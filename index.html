@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Tarefas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+  <!-- Modal confirma deleção -->
+  <div class="modal fade" id="confirmar-delecao" tabindex="-1" role="dialog" aria-labelledby="delTarefaLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          Deletar?
+        </div>
+        <div class="modal-body">
+          Você tem certeza que deseja deletar a tarefa?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          <a class="btn btn-danger btn-ok">Deletar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal nova tarefa -->
+  <form class="modal fade" id="adicionar-tarefa" tabindex="-1" aria-labelledby="addTarefaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addTarefaLabel">Nova Tarefa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Título</p>
+          <input type="text" class="form-control" name="" id="tituloInput">
+          <div id="msg"></div>
+          <br>
+          <p>Categoria</p>
+          <select id="categoriaSelect" class="form-select"></select>
+          <div id="msg"></div>
+          <br>
+          <p>Data limite</p>
+          <input type="date" class="form-control" name="" id="dataInput">
+          <br>
+          <p>Detalhes</p>
+          <textarea name="" class="form-control" id="detalhesTextarea" cols="30" rows="5"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" id="add" class="btn btn-primary">Adicionar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="container app">
+    <div class="row">
+      <div class="col">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <h4 class="mb-3">Gerenciador de Tarefas</h4>
+            </div>
+            <div class="col">
+              <button type="button" id="addTarefa" class="btn btn-success float-end" data-bs-toggle="modal"
+                data-bs-target="#adicionar-tarefa">
+                <i class="fas fa-plus"></i>
+              </button>
+
+            </div>
+          </div>
+          <div class="row">
+            <ul class="nav nav-tabs mb-3" id="categoria-tab" role="tablist"></ul>
+
+            <div class="tab-content" id="tarefa-tab-cont"></div>
+          </div>
+
+        </div>
+      </div>
+
+
+
+
+    </div>
+</body>
+<script src="script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"
+  integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
+
+</html>
