@@ -21,14 +21,14 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          Deletar?
+          <h5 class="modal-title" id="addTarefaLabel">Deletar?</h5>
         </div>
         <div class="modal-body">
           Você tem certeza que deseja deletar a tarefa?
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-          <a class="btn btn-danger btn-ok">Deletar</a>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <a class="btn btn-danger btn-ok" aria-label="Deletar" id="deletar-btn">Deletar</a>
         </div>
       </div>
     </div>
@@ -44,22 +44,18 @@
         </div>
         <div class="modal-body">
           <p>Título</p>
-          <input type="text" class="form-control" name="" id="tituloInput">
-          <div id="msg"></div>
-          <br>
+          <input type="text" class="form-control" name="titulo" id="tituloInput">
           <p>Categoria</p>
-          <select id="categoriaSelect" class="form-select"></select>
-          <div id="msg"></div>
-          <br>
+          <select id="categoriaSelect" class="form-select" name="categoria_id"></select>
           <p>Data limite</p>
-          <input type="date" class="form-control" name="" id="dataInput">
+          <input type="date" placeholder="dd/mm/yyyy" value="" class="form-control" name="data_limite" id="dataInput">
           <br>
           <p>Detalhes</p>
-          <textarea name="" class="form-control" id="detalhesTextarea" cols="30" rows="5"></textarea>
+          <textarea name="" class="form-control" id="detalhesTextarea" name="detalhes" cols="30" rows="5"></textarea>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" id="add" class="btn btn-primary">Adicionar</button>
+          <button type="button" id="adicionar-bnt" class="btn btn-primary" onclick="adicionarTarefa()">Adicionar</button>
         </div>
       </div>
     </div>
@@ -84,7 +80,7 @@
           <div class="row">
             <ul class="nav nav-tabs mb-3" id="categoria-tab" role="tablist"></ul>
 
-            <div class="tab-content" id="tarefa-tab-cont"></div>
+            <div class="tab-content" id="tarefa-tab-cont"> </div>
           </div>
 
         </div>
