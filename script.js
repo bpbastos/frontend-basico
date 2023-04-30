@@ -25,6 +25,7 @@ async function buscarCategorias() {
     //Busca categorias
     const response = await fetch(`${api_url}/categoria`)
     const categorias = await response.json();
+    if (!response.ok) throw new Error(response.statusText);
     for (const categoria of categorias) {
       criaCategoriaTab(categoria);
       criaCategoriaSelect(categoria);
@@ -46,6 +47,7 @@ async function buscarTarefas(categoriaId) {
   try {
     const response = await fetch(`${api_url}/tarefa?categoria_id=${categoriaId}`)
     const tarefas = await response.json();
+    if (!response.ok) throw new Error(response.statusText);
     removeElementosFilhos(parent);
     for (const tarefa of tarefas) {
       criaTarefaCard(tarefa);
@@ -58,7 +60,7 @@ async function buscarTarefas(categoriaId) {
     }
     criaAlert(container, tipo, msg, 2000, false);
   } catch (error) {
-    criaAlert(container, "alert-danger", msg, -1, false);
+    criaAlert(container, "alert-danger", error, -1, false);
     console.error(error);
   }
 }
@@ -117,6 +119,8 @@ function deletarTarefa(tarefaId, categoriaId) {
   let delBtn = document.getElementById("deletar-btn");
   let container = "container-msg-lista";
   //Define um event listener no btn do modal para deleção da tarefa
+  //Limpa os eventos antes de adicionar um novo
+  //delBtn.replaceWith(delBtn.cloneNode(true))
   delBtn.addEventListener("click", async function () {
     let modalEl = document.getElementById('confirmar-delecao');
     let modal = bootstrap.Modal.getInstance(modalEl);
@@ -137,7 +141,7 @@ function deletarTarefa(tarefaId, categoriaId) {
       criaAlert(container, "alert-danger", error, -1, false);
       console.error(error);
     }
-  });
+  },{once : true});
 }
 
 /*
@@ -146,7 +150,7 @@ function deletarTarefa(tarefaId, categoriaId) {
   --------------------------------------------------------------------------------------
 */
 function validaFormulario(erros) {
-  msg = "<strong>Erros nos campos</strong><br/><hr/>"
+  msg = "Por favor, corrija os <strong>erros</strong> abaixo:<br/><hr/>"
   tipo = "alert-danger";
   container = "container-msg-form";
   if (erros && erros.length) {
@@ -232,9 +236,13 @@ function criaTarefaCard(tarefa) {
   divCardHeader.setAttribute("class", "card-header align-middle");
   divCardHeader.textContent = tarefa.titulo;
   let button = document.createElement('button');
+  button.setAttribute("type", "button");
   button.setAttribute("class", "btn btn-danger btn-sm float-end");
   button.setAttribute("data-bs-toggle", "modal");
   button.setAttribute("data-bs-target", "#confirmar-delecao");
+  button.setAttribute("id", `del-btn-${tarefa.id}`);
+  //button.setAttribute("onclick", `deletarTarefa(${tarefa.id},${tarefa.categoria.id})`);
+  //button.removeEventListener("click", deletarTarefa(tarefa.id,tarefa.categoria.id));
   button.addEventListener("click", function () { 
     deletarTarefa(tarefa.id,tarefa.categoria.id);
   })
