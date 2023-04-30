@@ -8,7 +8,7 @@ let api_url = 'http://127.0.0.1:5000';
 async function inicializaApp() {
   let addBtn = document.getElementById("adicionar-bnt");
   await buscarCategorias();
-  ativarTab(1);
+  await ativarTab(1);
   addBtn.addEventListener("click", function () {
     adicionarTarefa();
   })
@@ -16,7 +16,7 @@ async function inicializaApp() {
 
 /*
   --------------------------------------------------------------------------------------
-  Função para obter a lista de categorias existentes e criar os elementos de UI
+  Função para obter a lista de categorias existentes via GET e criar os elementos de UI
   --------------------------------------------------------------------------------------
 */
 async function buscarCategorias() {
@@ -30,14 +30,14 @@ async function buscarCategorias() {
       criaCategoriaSelect(categoria);
     };
   } catch (error) {
-    criaAlert(container,"alert-danger",error,-1,false);
+    criaAlert(container, "alert-danger", error, -1, false);
   }
 }
 
 
 /*
   --------------------------------------------------------------------------------------
-  Função para obter a lista de tarefas via GET existentes e criar os elementos de UI
+  Função para obter a lista de tarefas existentes via GET e criar os elementos de UI
   --------------------------------------------------------------------------------------
 */
 async function buscarTarefas(categoriaId) {
@@ -55,10 +55,10 @@ async function buscarTarefas(categoriaId) {
     if (tarefas && tarefas.length) {
       tipo = "alert-success";
       msg = `Tarefas da categoria <strong>${tarefas[0].categoria.nome}</strong> carregadas com sucesso!`;
-    } 
-    criaAlert(container,tipo,msg,2000,false); 
+    }
+    criaAlert(container, tipo, msg, 2000, false);
   } catch (error) {
-    criaAlert(container,"alert-danger",msg,-1,false); 
+    criaAlert(container, "alert-danger", msg, -1, false);
     console.error(error);
   }
 }
@@ -73,40 +73,39 @@ async function adicionarTarefa() {
   let modal = bootstrap.Modal.getInstance(form);
   let titulo = document.getElementById("tituloInput").value;
   let dtLimite = document.getElementById("dataInput").value;
-  let detalhes = document.getElementById("detalhesTextarea").value;  
-  let categoriaId = document.getElementById("categoriaSelect").value; 
+  let detalhes = document.getElementById("detalhesTextarea").value;
+  let categoriaId = document.getElementById("categoriaSelect").value;
 
   //Preparando parametros
-  const formData  = new FormData();
-  formData.append("titulo",titulo);
-  formData.append("data_limite",dtLimite.split('-').reverse().join('/'));
-  formData.append("detalhes",detalhes);
-  formData.append("categoria_id",categoriaId);
-  
+  const formData = new FormData();
+  formData.append("titulo", titulo);
+  formData.append("data_limite", dtLimite.split('-').reverse().join('/'));
+  formData.append("detalhes", detalhes);
+  formData.append("categoria_id", categoriaId);
+
   try {
     const response = await fetch(`${api_url}/tarefa`, {
       method: "POST",
       body: formData
-    }); 
-    const tarefa = await response.json();  
+    });
+    const tarefa = await response.json();
     if (!response.ok) {
       if (response.status === 422) {
         validaFormulario(tarefa);
       }
     } else {
       tipo = "alert-success";
-      msg = `Tarefa de título <strong>${tarefa[0].titulo}</strong> cadastrada com sucesso!`;
-      criaAlert("container-msg-lista",tipo,msg,5000,false);  
+      msg = `Tarefa <strong>${tarefa[0].titulo}</strong> cadastrada com sucesso!`;
+      criaAlert("container-msg-lista", tipo, msg, 5000, false);
       modal.hide();
-      form.reset();    
+      form.reset();
       ativarTab(categoriaId);
     }
-    //removeElementosFilhos(document.getElementById("container-msg-form"));
   } catch (error) {
-    criaAlert(container,"alert-danger",error,-1,false);  
+    criaAlert(container, "alert-danger", error, -1, false);
     console.error(error);
-  } 
-  
+  }
+
 }
 
 /*
@@ -120,7 +119,7 @@ function deletarTarefa(tarefaId, categoriaId) {
   //Define um event listener no btn do modal para deleção da tarefa
   delBtn.addEventListener("click", async function () {
     let modalEl = document.getElementById('confirmar-delecao');
-    let modal = bootstrap.Modal.getInstance(modalEl);      
+    let modal = bootstrap.Modal.getInstance(modalEl);
     try {
       //Deleta tarefa
       const response = await fetch(`${api_url}/tarefa?id=${tarefaId}`, { method: 'DELETE' });
@@ -129,14 +128,13 @@ function deletarTarefa(tarefaId, categoriaId) {
       //Ativa tab
       ativarTab(categoriaId);
       //Msg de sucesso
-      
       tipo = "alert-success";
-      msg = `Tarefa de título <strong>${tarefa[0].titulo}</strong> deletada com sucesso!`;
-      criaAlert(container,tipo,msg,5000);
+      msg = `Tarefa <strong>${tarefa[0].titulo}</strong> deletada com sucesso!`;
+      criaAlert(container, tipo, msg, 5000);
       //Esconde modal
       modal.hide();
     } catch (error) {
-      criaAlert(container,"alert-danger",error,-1,false);
+      criaAlert(container, "alert-danger", error, -1, false);
       console.error(error);
     }
   });
@@ -150,12 +148,12 @@ function deletarTarefa(tarefaId, categoriaId) {
 function validaFormulario(erros) {
   msg = "<strong>Erros nos campos</strong><br/><hr/>"
   tipo = "alert-danger";
-  container = "container-msg-form";  
+  container = "container-msg-form";
   if (erros && erros.length) {
     erros.forEach(erro => {
       msg += `<strong>${erro.loc[0]}</strong>: ${erro.msg}<br/>`
     })
-    criaAlert(container,tipo,msg,-1,true);
+    criaAlert(container, tipo, msg, -1, true);
   }
 }
 
@@ -219,52 +217,6 @@ function criaCategoriaTab(categoria) {
 
 }
 
-
-/*
-  --------------------------------------------------------------------------------------
-  Função utilitária uma caixa de seleção de categorias
-  --------------------------------------------------------------------------------------
-*/
-function criaCategoriaSelect(categoria) {
-  let categoriaSelect = document.getElementById("categoriaSelect");
-  let option = document.createElement("option");
-  option.text = categoria.nome;
-  option.value = categoria.id;
-  categoriaSelect.add(option);  
-}
-
-/*
-  --------------------------------------------------------------------------------------
-  Função utilitária para criar os elementos de UI para representação de uma msg
-  --------------------------------------------------------------------------------------
-*/
-function criaAlert(containerId,tipo,msg,tempo,limpar) {
-  let divContainer = document.getElementById(containerId);
-  let divAlert = document.createElement('div');
-  let btnClose = document.createElement('button');
-
-  //Define um bootstrap alert
-  if (limpar) removeElementosFilhos(divContainer);
-
-  divAlert.setAttribute("class",`alert ${tipo} alert-dismissible fade show`);
-  divAlert.setAttribute("role","alert");
-  divAlert.innerHTML = msg;
-  //Fecha automaticamente
-  if (tempo > 0) {
-    new bootstrap.Alert(divAlert);
-    setTimeout(() => {
-      bootstrap.Alert.getInstance(divAlert).close();
-    }, tempo);
-  }
-  btnClose.setAttribute("class","btn-close");
-  btnClose.setAttribute("data-bs-dismiss","alert");
-  btnClose.setAttribute("aria-label","Fechar");
-  btnClose.setAttribute("type","button");
-
-  divAlert.appendChild(btnClose);
-  divContainer.appendChild(divAlert);
-}
-
 /*
   --------------------------------------------------------------------------------------
   Função utilitária para criar os elementos de UI para representação de uma tarefa
@@ -272,7 +224,6 @@ function criaAlert(containerId,tipo,msg,tempo,limpar) {
 */
 function criaTarefaCard(tarefa) {
   let divTabPane = document.getElementById(`categoria-${tarefa.categoria.id}`);
-
   //Cria o elemento card para representar uma tarefa
   let divCard = document.createElement('div');
   divCard.setAttribute("class", "card mb-3");
@@ -284,7 +235,9 @@ function criaTarefaCard(tarefa) {
   button.setAttribute("class", "btn btn-danger btn-sm float-end");
   button.setAttribute("data-bs-toggle", "modal");
   button.setAttribute("data-bs-target", "#confirmar-delecao");
-  button.setAttribute("onclick", `deletarTarefa(${tarefa.id},${tarefa.categoria.id})`);
+  button.addEventListener("click", function () { 
+    deletarTarefa(tarefa.id,tarefa.categoria.id);
+  })
   let i = document.createElement('i');
   i.setAttribute("class", "fas fa-minus");
   let small = document.createElement('small');
@@ -308,6 +261,52 @@ function criaTarefaCard(tarefa) {
 
   divTabPane.appendChild(divCard);
 
+}
+
+
+/*
+  --------------------------------------------------------------------------------------
+  Função utilitária uma caixa de seleção de categorias
+  --------------------------------------------------------------------------------------
+*/
+function criaCategoriaSelect(categoria) {
+  let categoriaSelect = document.getElementById("categoriaSelect");
+  let option = document.createElement("option");
+  option.text = categoria.nome;
+  option.value = categoria.id;
+  categoriaSelect.add(option);
+}
+
+/*
+  --------------------------------------------------------------------------------------
+  Função utilitária para criar os elementos de UI para representação de uma msg
+  --------------------------------------------------------------------------------------
+*/
+function criaAlert(containerId, tipo, msg, tempo, limpar) {
+  let divContainer = document.getElementById(containerId);
+  let divAlert = document.createElement('div');
+  let btnClose = document.createElement('button');
+
+  //Define um bootstrap alert
+  if (limpar) removeElementosFilhos(divContainer);
+
+  divAlert.setAttribute("class", `alert ${tipo} alert-dismissible fade show`);
+  divAlert.setAttribute("role", "alert");
+  divAlert.innerHTML = msg;
+  //Fecha automaticamente
+  if (tempo > 0) {
+    new bootstrap.Alert(divAlert);
+    setTimeout(() => {
+      bootstrap.Alert.getInstance(divAlert).close();
+    }, tempo);
+  }
+  btnClose.setAttribute("class", "btn-close");
+  btnClose.setAttribute("data-bs-dismiss", "alert");
+  btnClose.setAttribute("aria-label", "Fechar");
+  btnClose.setAttribute("type", "button");
+
+  divAlert.appendChild(btnClose);
+  divContainer.appendChild(divAlert);
 }
 
 //Incicializa o aplicativo
