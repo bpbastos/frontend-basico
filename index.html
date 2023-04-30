@@ -43,6 +43,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <div class="row" id="container-msg-form">
+          </div>          
           <p>Título</p>
           <input type="text" class="form-control" name="titulo" id="tituloInput">
           <p>Categoria</p>
@@ -74,15 +76,14 @@
                 data-bs-target="#adicionar-tarefa">
                 <i class="fas fa-plus"></i>
               </button>
-
             </div>
+          </div>
+          <div class="row" id="container-msg-lista">
           </div>
           <div class="row">
             <ul class="nav nav-tabs mb-3" id="categoria-tab" role="tablist"></ul>
-
             <div class="tab-content" id="tarefa-tab-cont"> </div>
           </div>
-
         </div>
       </div>
 

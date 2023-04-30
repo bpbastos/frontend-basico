@@ -2,11 +2,11 @@ let api_url = 'http://127.0.0.1:5000';
 
 async function inicializaApp() {
   await buscarCategorias();
-  //await buscarTarefas(1);
   ativarTab(1);
 }
 
 async function buscarCategorias() {
+  let container = "container-msg-lista";
   try {
     //Busca categorias
     const response = await fetch(`${api_url}/categoria`)
@@ -16,20 +16,29 @@ async function buscarCategorias() {
       criaCategoriaSelect(categoria);
     };
   } catch (error) {
-    console.error(error);
+    criaAlert(container,"alert-danger",error,-1,false);
   }
 }
 
 async function buscarTarefas(categoriaId) {
+  let parent = document.getElementById(`categoria-${categoriaId}`);
+  let container = "container-msg-lista";
   try {
     const response = await fetch(`${api_url}/tarefa?categoria_id=${categoriaId}`)
     const tarefas = await response.json();
-    removeTarefasCard(categoriaId);
+    removeElementosFilhos(parent);
     for (const tarefa of tarefas) {
       criaTarefaCard(tarefa);
     };
-    //ativarTab(categoriaId);
+    tipo = "alert-warning";
+    msg = `Nenhuma tarefa encontrada para essa categoria.`;
+    if (tarefas && tarefas.length) {
+      tipo = "alert-success";
+      msg = `Tarefas da categoria <strong>${tarefas[0].categoria.nome}</strong> carregadas com sucesso!`;
+    } 
+    criaAlert(container,tipo,msg,2000,false); 
   } catch (error) {
+    criaAlert(container,"alert-danger",msg,-1,false); 
     console.error(error);
   }
 }
@@ -41,7 +50,8 @@ async function adicionarTarefa() {
   let titulo = document.getElementById("tituloInput").value;
   let dtLimite = document.getElementById("dataInput").value;
   let detalhes = document.getElementById("detalhesTextarea").value;  
-  let categoriaId = document.getElementById("categoriaSelect").value;  
+  let categoriaId = document.getElementById("categoriaSelect").value; 
+  let container = "container-msg-lista"; 
 
   //Preparando parametros
   const formData  = new FormData();
@@ -56,12 +66,20 @@ async function adicionarTarefa() {
       body: formData
     }); 
     const tarefa = await response.json();  
-    await buscarTarefas(categoriaId);
-    ativarTab(categoriaId);
-    modal.hide();
-    form.reset();    
-    console.log(tarefa);
+    if (!response.ok) {
+      if (response.status === 422) {
+        validaFormulario(tarefa);
+      }
+    } else {
+      tipo = "alert-success";
+      msg = `Tarefa de título <strong>${tarefa[0].titulo}</strong> cadastrada com sucesso!`;
+      criaAlert(container,tipo,msg,5000,false);  
+      modal.hide();
+      form.reset();    
+      ativarTab(categoriaId);
+    }
   } catch (error) {
+    criaAlert(container,"alert-danger",error,-1,false);  
     console.error(error);
   } 
   
@@ -69,6 +87,7 @@ async function adicionarTarefa() {
 
 function deletarTarefa(tarefaId, categoriaId) {
   let delBtn = document.getElementById("deletar-btn");
+  let container = "container-msg-lista";
   //Define um event listener no btn do modal para deleção da tarefa
   delBtn.addEventListener("click", async function () {
     let modalEl = document.getElementById('confirmar-delecao');
@@ -76,18 +95,37 @@ function deletarTarefa(tarefaId, categoriaId) {
     try {
       //Deleta tarefa
       const response = await fetch(`${api_url}/tarefa?id=${tarefaId}`, { method: 'DELETE' });
+      const tarefa = await response.json();
+      if (!response.ok) throw new Error(response.statusText);
       //Ativa tab
       ativarTab(categoriaId);
+      //Msg de sucesso
+      
+      tipo = "alert-success";
+      msg = `Tarefa de título <strong>${tarefa[0].titulo}</strong> deletada com sucesso!`;
+      criaAlert(container,tipo,msg,5000);
       //Esconde modal
       modal.hide();
     } catch (error) {
+      criaAlert(container,"alert-danger",error,-1,false);
       console.error(error);
     }
   });
 }
 
-function removeTarefasCard(categoriaId) {
-  let parent = document.getElementById(`categoria-${categoriaId}`);
+function validaFormulario(erros) {
+  msg = ""
+  tipo = "alert-danger";
+  container = "container-msg-form";  
+  if (erros && erros.length) {
+    erros.forEach(erro => {
+      msg += `<p>Erro no campo <strong>${erro.loc[0]}</strong> mensagem: ${erro.msg}</p>`
+    })
+    criaAlert(container,tipo,msg,-1,true);
+  }
+}
+
+function removeElementosFilhos(parent) {
   while (parent.firstChild) {
     parent.removeChild(parent.firstChild);
   }
@@ -95,7 +133,7 @@ function removeTarefasCard(categoriaId) {
 
 function ativarTab(categoriaId) {
   let link = document.getElementById(`tab-${categoriaId}`);
-  link.click();
+  if (link) link.click();
 }
 
 function criaCategoriaTab(categoria) {
@@ -140,6 +178,33 @@ function criaCategoriaSelect(categoria) {
   option.text = categoria.nome;
   option.value = categoria.id;
   categoriaSelect.add(option);  
+}
+
+function criaAlert(containerId,tipo,msg,tempo,limpar) {
+  let divContainer = document.getElementById(containerId);
+  let divAlert = document.createElement('div');
+  let btnClose = document.createElement('button');
+
+  //Define um bootstrap alert
+  if (limpar) removeElementosFilhos(divContainer);
+
+  divAlert.setAttribute("class",`alert ${tipo} alert-dismissible fade show`);
+  divAlert.setAttribute("role","alert");
+  divAlert.innerHTML = msg;
+  //Fecha automaticamente
+  if (tempo > 0) {
+    new bootstrap.Alert(divAlert);
+    setTimeout(() => {
+      bootstrap.Alert.getInstance(divAlert).close();
+    }, tempo);
+  }
+  btnClose.setAttribute("class","btn-close");
+  btnClose.setAttribute("data-bs-dismiss","alert");
+  btnClose.setAttribute("aria-label","Fechar");
+  btnClose.setAttribute("type","button");
+
+  divAlert.appendChild(btnClose);
+  divContainer.appendChild(divAlert);
 }
 
 function criaTarefaCard(tarefa) {
