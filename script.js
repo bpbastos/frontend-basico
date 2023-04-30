@@ -157,7 +157,7 @@ function validaFormulario(erros) {
     erros.forEach(erro => {
       msg += `<strong>${erro.loc[0]}</strong>: ${erro.msg}<br/>`
     })
-    criaAlert(container, tipo, msg, -1, true);
+    criaAlert(container, tipo, msg, 10000, true);
   }
 }
 
