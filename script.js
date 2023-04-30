@@ -51,8 +51,7 @@ async function adicionarTarefa() {
   let dtLimite = document.getElementById("dataInput").value;
   let detalhes = document.getElementById("detalhesTextarea").value;  
   let categoriaId = document.getElementById("categoriaSelect").value; 
-  let container = "container-msg-lista"; 
-
+  
   //Preparando parametros
   const formData  = new FormData();
   formData.append("titulo",titulo);
@@ -73,11 +72,12 @@ async function adicionarTarefa() {
     } else {
       tipo = "alert-success";
       msg = `Tarefa de título <strong>${tarefa[0].titulo}</strong> cadastrada com sucesso!`;
-      criaAlert(container,tipo,msg,5000,false);  
+      criaAlert("container-msg-lista",tipo,msg,5000,false);  
       modal.hide();
       form.reset();    
       ativarTab(categoriaId);
     }
+    removeElementosFilhos(document.getElementById("container-msg-form"));
   } catch (error) {
     criaAlert(container,"alert-danger",error,-1,false);  
     console.error(error);
@@ -114,12 +114,12 @@ function deletarTarefa(tarefaId, categoriaId) {
 }
 
 function validaFormulario(erros) {
-  msg = ""
+  msg = "<strong>Erros nos campos</strong><br/><hr/>"
   tipo = "alert-danger";
   container = "container-msg-form";  
   if (erros && erros.length) {
     erros.forEach(erro => {
-      msg += `<p>Erro no campo <strong>${erro.loc[0]}</strong> mensagem: ${erro.msg}</p>`
+      msg += `<strong>${erro.loc[0]}</strong>: ${erro.msg}<br/>`
     })
     criaAlert(container,tipo,msg,-1,true);
   }
