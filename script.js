@@ -1,10 +1,24 @@
 let api_url = 'http://127.0.0.1:5000';
 
+/*
+  --------------------------------------------------------------------------------------
+  Função que incicializa o aplicativo
+  --------------------------------------------------------------------------------------
+*/
 async function inicializaApp() {
+  let addBtn = document.getElementById("adicionar-bnt");
   await buscarCategorias();
   ativarTab(1);
+  addBtn.addEventListener("click", function () {
+    adicionarTarefa();
+  })
 }
 
+/*
+  --------------------------------------------------------------------------------------
+  Função para obter a lista de categorias existentes e criar os elementos de UI
+  --------------------------------------------------------------------------------------
+*/
 async function buscarCategorias() {
   let container = "container-msg-lista";
   try {
@@ -20,6 +34,12 @@ async function buscarCategorias() {
   }
 }
 
+
+/*
+  --------------------------------------------------------------------------------------
+  Função para obter a lista de tarefas via GET existentes e criar os elementos de UI
+  --------------------------------------------------------------------------------------
+*/
 async function buscarTarefas(categoriaId) {
   let parent = document.getElementById(`categoria-${categoriaId}`);
   let container = "container-msg-lista";
@@ -43,7 +63,11 @@ async function buscarTarefas(categoriaId) {
   }
 }
 
-
+/*
+  --------------------------------------------------------------------------------------
+  Função para criar uma tarefa via POST e criar/atualizar os elementos de UI
+  --------------------------------------------------------------------------------------
+*/
 async function adicionarTarefa() {
   let form = document.getElementById("adicionar-tarefa");
   let modal = bootstrap.Modal.getInstance(form);
@@ -51,7 +75,7 @@ async function adicionarTarefa() {
   let dtLimite = document.getElementById("dataInput").value;
   let detalhes = document.getElementById("detalhesTextarea").value;  
   let categoriaId = document.getElementById("categoriaSelect").value; 
-  
+
   //Preparando parametros
   const formData  = new FormData();
   formData.append("titulo",titulo);
@@ -77,7 +101,7 @@ async function adicionarTarefa() {
       form.reset();    
       ativarTab(categoriaId);
     }
-    removeElementosFilhos(document.getElementById("container-msg-form"));
+    //removeElementosFilhos(document.getElementById("container-msg-form"));
   } catch (error) {
     criaAlert(container,"alert-danger",error,-1,false);  
     console.error(error);
@@ -85,6 +109,11 @@ async function adicionarTarefa() {
   
 }
 
+/*
+  --------------------------------------------------------------------------------------
+  Função para deletar uma tarefa via DELETE e criar/atualizar os elementos de UI
+  --------------------------------------------------------------------------------------
+*/
 function deletarTarefa(tarefaId, categoriaId) {
   let delBtn = document.getElementById("deletar-btn");
   let container = "container-msg-lista";
@@ -113,6 +142,11 @@ function deletarTarefa(tarefaId, categoriaId) {
   });
 }
 
+/*
+  --------------------------------------------------------------------------------------
+  Função utilitária para validar e formatar as msg de erro. 
+  --------------------------------------------------------------------------------------
+*/
 function validaFormulario(erros) {
   msg = "<strong>Erros nos campos</strong><br/><hr/>"
   tipo = "alert-danger";
@@ -125,17 +159,32 @@ function validaFormulario(erros) {
   }
 }
 
+/*
+  --------------------------------------------------------------------------------------
+  Função utilitária para remover elementos DOM filhos de um container. 
+  --------------------------------------------------------------------------------------
+*/
 function removeElementosFilhos(parent) {
   while (parent.firstChild) {
     parent.removeChild(parent.firstChild);
   }
 }
 
+/*
+  --------------------------------------------------------------------------------------
+  Função utilitária para ativar uma aba de uma determinada categoria
+  --------------------------------------------------------------------------------------
+*/
 function ativarTab(categoriaId) {
   let link = document.getElementById(`tab-${categoriaId}`);
   if (link) link.click();
 }
 
+/*
+  --------------------------------------------------------------------------------------
+  Função utilitária para criar os elementos de UI para representação de uma categoria
+  --------------------------------------------------------------------------------------
+*/
 function criaCategoriaTab(categoria) {
   let ul = document.getElementById("categoria-tab");
   let li = document.createElement('li');
@@ -147,9 +196,7 @@ function criaCategoriaTab(categoria) {
   a.classList.add("nav-link");
   a.setAttribute("id", `tab-${categoria.id}`);
   a.setAttribute("data-bs-toggle", "tab");
-  //a.setAttribute("data-bs-target",`#tab-pane-${categoria.id}`);
   a.setAttribute("role", "tab");
-  //a.setAttribute("aria-controls",`tab-pane-${categoria.id}`);
   a.setAttribute("aria-selected", "false");
   //Adiciona evento click para carregar tarefas dinamicamente
   a.addEventListener("click", function () { buscarTarefas(categoria.id); });
@@ -172,6 +219,12 @@ function criaCategoriaTab(categoria) {
 
 }
 
+
+/*
+  --------------------------------------------------------------------------------------
+  Função utilitária uma caixa de seleção de categorias
+  --------------------------------------------------------------------------------------
+*/
 function criaCategoriaSelect(categoria) {
   let categoriaSelect = document.getElementById("categoriaSelect");
   let option = document.createElement("option");
@@ -180,6 +233,11 @@ function criaCategoriaSelect(categoria) {
   categoriaSelect.add(option);  
 }
 
+/*
+  --------------------------------------------------------------------------------------
+  Função utilitária para criar os elementos de UI para representação de uma msg
+  --------------------------------------------------------------------------------------
+*/
 function criaAlert(containerId,tipo,msg,tempo,limpar) {
   let divContainer = document.getElementById(containerId);
   let divAlert = document.createElement('div');
@@ -207,6 +265,11 @@ function criaAlert(containerId,tipo,msg,tempo,limpar) {
   divContainer.appendChild(divAlert);
 }
 
+/*
+  --------------------------------------------------------------------------------------
+  Função utilitária para criar os elementos de UI para representação de uma tarefa
+  --------------------------------------------------------------------------------------
+*/
 function criaTarefaCard(tarefa) {
   let divTabPane = document.getElementById(`categoria-${tarefa.categoria.id}`);
 
@@ -247,4 +310,5 @@ function criaTarefaCard(tarefa) {
 
 }
 
+//Incicializa o aplicativo
 inicializaApp();
