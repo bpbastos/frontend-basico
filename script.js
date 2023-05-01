@@ -23,6 +23,7 @@ async function buscarCategorias() {
   let container = "container-msg-lista";
   try {
     //Busca categorias
+    mostraLoading();
     const response = await fetch(`${api_url}/categoria`)
     const categorias = await response.json();
     if (!response.ok) throw new Error(response.statusText);
@@ -30,8 +31,11 @@ async function buscarCategorias() {
       criaCategoriaTab(categoria);
       criaCategoriaSelect(categoria);
     };
+    escondeLoading();
   } catch (error) {
     criaAlert(container, "alert-danger", error, -1, false);
+    escondeLoading();
+    console.error(error);
   }
 }
 
@@ -45,6 +49,7 @@ async function buscarTarefas(categoriaId) {
   let parent = document.getElementById(`categoria-${categoriaId}`);
   let container = "container-msg-lista";
   try {
+    mostraLoading();
     const response = await fetch(`${api_url}/tarefa?categoria_id=${categoriaId}`)
     const tarefas = await response.json();
     if (!response.ok) throw new Error(response.statusText);
@@ -52,15 +57,10 @@ async function buscarTarefas(categoriaId) {
     for (const tarefa of tarefas) {
       criaTarefaCard(tarefa);
     };
-    tipo = "alert-warning";
-    msg = `Nenhuma tarefa encontrada para essa categoria.`;
-    if (tarefas && tarefas.length) {
-      tipo = "alert-success";
-      msg = `Tarefas da categoria <strong>${tarefas[0].categoria.nome}</strong> carregadas com sucesso!`;
-    }
-    criaAlert(container, tipo, msg, 2000, false);
+    escondeLoading();
   } catch (error) {
     criaAlert(container, "alert-danger", error, -1, false);
+    escondeLoading();
     console.error(error);
   }
 }
@@ -86,6 +86,7 @@ async function adicionarTarefa() {
   formData.append("categoria_id", categoriaId);
 
   try {
+    mostraLoading();
     const response = await fetch(`${api_url}/tarefa`, {
       method: "POST",
       body: formData
@@ -103,8 +104,10 @@ async function adicionarTarefa() {
       form.reset();
       ativarTab(categoriaId);
     }
+    escondeLoading();
   } catch (error) {
     criaAlert(container, "alert-danger", error, -1, false);
+    escondeLoading();
     console.error(error);
   }
 
@@ -126,6 +129,7 @@ function deletarTarefa(tarefaId, categoriaId) {
     let modal = bootstrap.Modal.getInstance(modalEl);
     try {
       //Deleta tarefa
+      mostraLoading();
       const response = await fetch(`${api_url}/tarefa?id=${tarefaId}`, { method: 'DELETE' });
       const tarefa = await response.json();
       if (!response.ok) throw new Error(response.statusText);
@@ -137,8 +141,10 @@ function deletarTarefa(tarefaId, categoriaId) {
       criaAlert(container, tipo, msg, 5000);
       //Esconde modal
       modal.hide();
+      escondeLoading();
     } catch (error) {
       criaAlert(container, "alert-danger", error, -1, false);
+      escondeLoading();
       console.error(error);
     }
   },{once : true});
@@ -241,8 +247,6 @@ function criaTarefaCard(tarefa) {
   button.setAttribute("data-bs-toggle", "modal");
   button.setAttribute("data-bs-target", "#confirmar-delecao");
   button.setAttribute("id", `del-btn-${tarefa.id}`);
-  //button.setAttribute("onclick", `deletarTarefa(${tarefa.id},${tarefa.categoria.id})`);
-  //button.removeEventListener("click", deletarTarefa(tarefa.id,tarefa.categoria.id));
   button.addEventListener("click", function () { 
     deletarTarefa(tarefa.id,tarefa.categoria.id);
   })
@@ -258,11 +262,13 @@ function criaTarefaCard(tarefa) {
 
   let divCardBody = document.createElement('div');
   divCardBody.setAttribute("class", "card-body");
+  
 
   let p = document.createElement('p');
   p.setAttribute("class", "card-text");
-  p.textContent = tarefa.detalhes;
+  p.textContent = tarefa.detalhes;  
   divCardBody.appendChild(p);
+  divCardBody.appendChild(small);
 
   divCard.appendChild(divCardHeader);
   divCard.appendChild(divCardBody);
@@ -315,6 +321,26 @@ function criaAlert(containerId, tipo, msg, tempo, limpar) {
 
   divAlert.appendChild(btnClose);
   divContainer.appendChild(divAlert);
+}
+
+/*
+  --------------------------------------------------------------------------------------
+  Função utilitária para criar os mostrar uma animação de loading
+  --------------------------------------------------------------------------------------
+*/
+function mostraLoading() {
+  let loader = document.getElementById("loading");
+  loader.classList.add("display");
+}
+
+/*
+  --------------------------------------------------------------------------------------
+  Função utilitária para esconder uma animação de loading
+  --------------------------------------------------------------------------------------
+*/
+function escondeLoading() {
+  let loader = document.getElementById("loading");
+  loader.classList.remove("display");
 }
 
 //Incicializa o aplicativo
