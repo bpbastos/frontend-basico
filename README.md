@@ -1,4 +1,4 @@
-# Frontend - Gerenciamento de Tarefas 
+# Frontend - Gerenciador de Tarefas
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/bpbastos/frontend-mvp-basico?style=for-the-badge)
 ![GitHub language count](https://img.shields.io/github/languages/count/bpbastos/frontend-mvp-basico?style=for-the-badge)
@@ -17,7 +17,7 @@ Antes de começar, verifique se você atendeu aos seguintes requisitos:
 * Você tem uma máquina `<Windows / Linux / Mac>`.
 * Você tem um navegador de internet `<Edge / Chrome / Safari>`.
 
-## ☕ Usando <Frontend - Gerenciamento de Tarefas>
+## ☕ Usando <Frontend - Gerenciador de Tarefas>
 
 ```
 Basta fazer download do projeto e abrir o arquivo index.html usando o navegador da sua preferência.
